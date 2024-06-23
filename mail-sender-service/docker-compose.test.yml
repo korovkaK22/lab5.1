@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - maven-repo:/root/.m2
+    command: ./mvnw test
+
+volumes:
+  maven-repo:

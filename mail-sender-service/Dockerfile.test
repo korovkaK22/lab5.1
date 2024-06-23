@@ -1,0 +1,16 @@
+FROM maven:3.9.7 AS build
+WORKDIR /app
+
+COPY pom.xml ./
+COPY .env .env
+RUN mvn dependency:go-offline
+
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/.env .env
+EXPOSE 8081
+CMD ["java", "-jar", "app.jar"]

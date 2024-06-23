@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="v1-2" author="Andrii Sereda">
+        <insert tableName="companies">
+            <column name="name" value="City Glide Taxis"/>
+            <column name="country" value="Ukraine"/>
+            <column name="working_cars_amount" valueNumeric="50"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="SwiftRide Taxi"/>
+            <column name="country" value="Canada"/>
+            <column name="working_cars_amount" valueNumeric="30"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="Metro Hop Cab Co."/>
+            <column name="country" value="Canada"/>
+            <column name="working_cars_amount" valueNumeric="20"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="QuickTrip Taxis"/>
+            <column name="country" value="France"/>
+            <column name="working_cars_amount" valueNumeric="35"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="Yellow Route Taxis"/>
+            <column name="country" value="Australia"/>
+            <column name="working_cars_amount" valueNumeric="40"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="FirstCall Cabs"/>
+            <column name="country" value="Australia"/>
+            <column name="working_cars_amount" valueNumeric="22"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="Rapid Transit Taxi"/>
+            <column name="country" value="Spain"/>
+            <column name="working_cars_amount" valueNumeric="43"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="FlashDrive Taxi Service"/>
+            <column name="country" value="South Africa"/>
+            <column name="working_cars_amount" valueNumeric="10"/>
+        </insert>
+        <insert tableName="companies">
+            <column name="name" value="Downtown Cabs"/>
+            <column name="country" value="Ukraine"/>
+            <column name="working_cars_amount" valueNumeric="15"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

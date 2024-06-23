@@ -1,0 +1,129 @@
+version: "3.7"
+services:
+  mail-sender:
+    container_name: mail-sender
+    healthcheck:
+      test: curl -s http://elasticsearch:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
+    networks:
+      - go_netw
+    build:
+      context: ./mail-sender-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      SPRING_APPLICATION_NAME: notification_service
+      SPRING_KAFKA_CONSUMER_GROUP_ID: kafka-sample
+      SPRING_KAFKA_PRODUCER_CLIENT_ID: kafka-sample
+      SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: org.springframework.kafka.support.serializer.JsonSerializer
+      SERVER_PORT: 8081
+    env_file:
+      - ./mail-sender-service/.env
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+
+  backend:
+    container_name: backend
+    build:
+      context: ./TaxiDriverRestApplication
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - go_netw
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_APPLICATION_NAME: taxi_driver_service
+      SPRING_KAFKA_CONSUMER_GROUP_ID: kafka-sample
+      SPRING_KAFKA_PRODUCER_CLIENT_ID: kafka-sample
+      SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: org.springframework.kafka.support.serializer.JsonSerializer
+      SERVER_PORT: 8082
+    depends_on:
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+  postgres:
+    container_name: postgres
+    image: postgres:16.3
+    networks:
+      - go_netw
+    environment:
+      POSTGRES_DB: "internatura"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "asdfghjkl;'"
+    ports:
+      - "5432:5432"
+
+
+  elasticsearch:
+    networks:
+      - go_netw
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.3
+    container_name: elasticsearch
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      xpack.security.enabled: false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:9200/
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.3
+    container_name: kibana
+    networks:
+      - go_netw
+    environment:
+      discovery.type: "single-node"
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+
+  zookeeper:
+    networks:
+      - go_netw
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    networks:
+      - go_netw
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+
+networks:
+  go_netw:
+    driver: bridge
