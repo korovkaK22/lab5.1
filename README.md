@@ -9,7 +9,8 @@
 ## General Information
 This repository contains two tasks: Task 2 in the `/TaxiDriverRestApplication` folder, and Task 5.1 in the
 `/mail-sender-service folder`. Task 2 has been rewritten to send messages to Kafka, and Docker files
-have been added to automatically set it up with PostgreSQL. Ports for Kibana and the backend have been 
+have been added to automatically set it up with PostgreSQL. All data in PostgreSQL will be saved in external folder
+`/postgres-data`. Ports for Kibana and the backend have been 
 mapped to the local machine to allow immediate access to these services.
 
 

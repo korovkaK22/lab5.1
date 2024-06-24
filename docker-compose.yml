@@ -64,9 +64,11 @@ services:
       POSTGRES_DB: "internatura"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "asdfghjkl;'"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
       - "5432:5432"
-
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   elasticsearch:
     networks:
@@ -127,3 +129,6 @@ services:
 networks:
   go_netw:
     driver: bridge
+
+volumes:
+  postgres-data:
